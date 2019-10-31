@@ -6,9 +6,10 @@ import tensorflow as tf
 from tensorflow import feature_column
 from tensorflow.keras import layers
 
+# Read the file
 df = pd.read_csv('data/listings.csv', low_memory=False)
 
-# remove useless columns
+# Remove useless columns
 drop_columns = ['id', 'listing_url','scrape_id', 'last_scraped', 'name', 'summary', 'space', 'description',
                 'neighborhood_overview', 'notes', 'transit', 'access', 'interaction', 'house_rules',
                 'experiences_offered', 'thumbnail_url', 'medium_url', 'picture_url', 'xl_picture_url', 'host_id',
@@ -41,7 +42,7 @@ processed_listings = specific_areas_listings.replace({'price': {'\$': '', ',': '
                                                       'extra_people': {'\$': '', ',': '', '.00': ''}
                                                       }, regex=True)
 
-#
+# Put 0 or 1 based on boolean data
 bool_map = {'f': 0, 't': 1}
 processed_listings['instant_bookable'].replace(bool_map, inplace=True)
 processed_listings['is_business_travel_ready'].replace(bool_map, inplace=True)
@@ -78,10 +79,4 @@ feature_columns.append(bed_type_one_hot)
 processed_listings = processed_listings.apply(pd.to_numeric)
 train_set, test_set = train_test_split(processed_listings, test_size=0.25)
 
-# Visualize correlation by using heatmap
-# colormap = plt.cm.RdBu
-# heat_map = sns.heatmap(train_set.corr(),linewidths=0.1,vmax=1.0, square=True, cmap=colormap, linecolor='white')
-# plt.show()
-
 print(train_set.corr()['price'])
-
