@@ -1,11 +1,14 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import seaborn as sns
-import matplotlib.pyplot as plt
+
+import tensorflow as tf
+
+from tensorflow import feature_column
+from tensorflow.keras import layers
 
 df = pd.read_csv('data/listings.csv', low_memory=False)
 
-# reduce columns
+# remove useless columns
 drop_columns = ['id', 'listing_url','scrape_id', 'last_scraped', 'name', 'summary', 'space', 'description',
                 'neighborhood_overview', 'notes', 'transit', 'access', 'interaction', 'house_rules',
                 'experiences_offered', 'thumbnail_url', 'medium_url', 'picture_url', 'xl_picture_url', 'host_id',
@@ -38,10 +41,7 @@ processed_listings = specific_areas_listings.replace({'price': {'\$': '', ',': '
                                                       'extra_people': {'\$': '', ',': '', '.00': ''}
                                                       }, regex=True)
 
-# Mapping
-# cancellation_policy_map = {'modelate': 0, 'strict_14_with_grace_period': 1}
-# processed_listings['cancellation_policy'].map(cancellation_policy_map)
-
+#
 bool_map = {'f': 0, 't': 1}
 processed_listings['instant_bookable'].replace(bool_map, inplace=True)
 processed_listings['is_business_travel_ready'].replace(bool_map, inplace=True)
@@ -51,19 +51,28 @@ processed_listings['host_is_superhost'].replace(bool_map, inplace=True)
 processed_listings['is_location_exact'].replace(bool_map, inplace=True)
 processed_listings['has_availability'].replace(bool_map, inplace=True)
 
-area_map = {'Shinjuku Ku': 0, 'Taito Ku': 1, 'Toshima Ku': 2, 'Shibuya Ku': 3, 'Minato Ku': 4}
-processed_listings['neighbourhood_cleansed'].replace(area_map, inplace=True)
+# One-hot encoding
+feature_columns = []
 
-property_n_room_type_map = {'Apartment': 0, 'House': 1, 'Serviced apartment': 2, 'Condominium': 3, 'Villa': 4, 'Hostel': 5,
-                     'Aparthotel': 6, 'Ryokan (Japan)': 7, 'Hotel': 8, 'Boutique hotel': 9, 'Guest suite': 10,
-                     'Guesthouse': 11, 'Cabin': 12, 'Other': 13, 'Townhouse': 14, 'Loft': 15, 'Dorm': 16,
-                     'Tiny house': 17, 'Bungalow': 18, 'Hut': 19, 'Camper/RV': 20, 'Bed and breakfast': 21,
-                     'Entire home/apt': 22, 'Private room': 23, 'Shared room': 24}
-processed_listings['property_type'].replace(property_n_room_type_map, inplace=True)
-processed_listings['room_type'].replace(property_n_room_type_map, inplace=True)
+neighbourhood_cleansed_vocabulary_list = processed_listings['neighbourhood_cleansed'].unique()
+neighbourhood_cleansed = feature_column.categorical_column_with_vocabulary_list('neighbourhood_cleansed', neighbourhood_cleansed_vocabulary_list)
+neighbourhood_cleansed_one_hot = feature_column.indicator_column(neighbourhood_cleansed_vocabulary_list)
+feature_columns.append(neighbourhood_cleansed_one_hot)
 
-bed_type_map = {'Real Bed': 0, 'Futon': 1, 'Pull-out Sofa': 2}
-processed_listings['bed_type'].replace(bed_type_map, inplace=True)
+property_type_vocabulary_list = processed_listings['property_type'].unique()
+property_type = feature_column.categorical_column_with_vocabulary_list('property_type', property_type_vocabulary_list)
+property_type_one_hot = feature_column.indicator_column(property_type)
+feature_columns.append(property_type_one_hot)
+
+room_type_vocabulary_list = processed_listings['room_type'].unique()
+room_type = feature_column.categorical_column_with_vocabulary_list('room_type', room_type_vocabulary_list)
+room_type_one_hot = feature_column.indicator_column(room_type)
+feature_columns.append(room_type_one_hot)
+
+bed_type_vocabulary_list = processed_listings['bed_type'].unique()
+bed_type = feature_column.categorical_column_with_vocabulary_list('bed_type', bed_type_vocabulary_list)
+bed_type_one_hot = feature_column.indicator_column(bed_type)
+feature_columns.append(bed_type_one_hot)
 
 # Make training set and test set
 processed_listings = processed_listings.apply(pd.to_numeric)
