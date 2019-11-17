@@ -24,18 +24,18 @@ drop_columns = ['id', 'listing_url','scrape_id', 'last_scraped', 'name', 'summar
                 # Remove some data based on correlation
                 'host_total_listings_count']
 data = df.drop(drop_columns, axis=1)
+data = data.rename(columns={'neighbourhood_cleansed': 'area'})
 
 # Extract specific areas
-data = data[(data['neighbourhood_cleansed'] == 'Shibuya Ku') | (data['neighbourhood_cleansed'] == 'Shinjuku Ku') |
-            (data['neighbourhood_cleansed'] == 'Toshima Ku') | (data['neighbourhood_cleansed'] == 'Taito Ku') |
-            (data['neighbourhood_cleansed'] == 'Minato Ku')]
+data = data[(data['area'] == 'Shibuya Ku') | (data['area'] == 'Shinjuku Ku') | (data['area'] == 'Toshima Ku') |
+            (data['area'] == 'Taito Ku') | (data['area'] == 'Minato Ku')]
 
 # A list has NaN, the list will be dropped
 data = data.dropna(axis=0, how='any')
 
 # Change char to int in 'price'
 data = data.replace({'price': {'\$': '', ',': '', '.00': ''}, 'security_deposit': {'\$': '', ',': '', '.00': ''},
-                      'cleaning_fee': {'\$': '', ',': '', '.00': ''}, 'extra_people': {'\$': '', ',': '', '.00': ''}},
+                     'cleaning_fee': {'\$': '', ',': '', '.00': ''}, 'extra_people': {'\$': '', ',': '', '.00': ''}},
                     regex=True)
 
 # Put 0 or 1 based on boolean data
@@ -50,25 +50,4 @@ data['has_availability'].replace(bool_map, inplace=True)
 
 
 # One-hot encoding
-feature_columns = []
-
-neighbourhood_cleansed_vocabulary_list = data['neighbourhood_cleansed'].unique()
-neighbourhood_cleansed = feature_column.categorical_column_with_vocabulary_list('neighbourhood_cleansed', neighbourhood_cleansed_vocabulary_list)
-neighbourhood_cleansed_one_hot = feature_column.indicator_column(neighbourhood_cleansed_vocabulary_list)
-feature_columns.append(neighbourhood_cleansed_one_hot)
-
-property_type_vocabulary_list = data['property_type'].unique()
-property_type = feature_column.categorical_column_with_vocabulary_list('property_type', property_type_vocabulary_list)
-property_type_one_hot = feature_column.indicator_column(property_type)
-feature_columns.append(property_type_one_hot)
-
-room_type_vocabulary_list = data['room_type'].unique()
-room_type = feature_column.categorical_column_with_vocabulary_list('room_type', room_type_vocabulary_list)
-room_type_one_hot = feature_column.indicator_column(room_type)
-feature_columns.append(room_type_one_hot)
-
-bed_type_vocabulary_list = data['bed_type'].unique()
-bed_type = feature_column.categorical_column_with_vocabulary_list('bed_type', bed_type_vocabulary_list)
-bed_type_one_hot = feature_column.indicator_column(bed_type)
-feature_columns.append(bed_type_one_hot)
-
+data = pd.get_dummies(data, columns=['area', 'property_type', 'room_type', 'bed_type'])
