@@ -34,9 +34,8 @@ data = data[(data['area'] == 'Shibuya Ku') | (data['area'] == 'Shinjuku Ku') | (
 data = data.dropna(axis=0, how='any')
 
 # Change char to int in 'price'
-data = data.replace({'price': {'\$': '', ',': '', '.00': ''}, 'security_deposit': {'\$': '', ',': '', '.00': ''},
-                     'cleaning_fee': {'\$': '', ',': '', '.00': ''}, 'extra_people': {'\$': '', ',': '', '.00': ''}},
-                    regex=True)
+data = data.replace({'price': {'\$': '', ',': ''}, 'security_deposit': {'\$': '', ',': ''},
+                     'cleaning_fee': {'\$': '', ',': ''}, 'extra_people': {'\$': '', ',': ''}}, regex=True)
 
 # Put 0 or 1 based on boolean data
 bool_map = {'f': 0, 't': 1}
@@ -51,3 +50,9 @@ data['has_availability'].replace(bool_map, inplace=True)
 
 # One-hot encoding
 data = pd.get_dummies(data, columns=['area', 'property_type', 'room_type', 'bed_type'])
+
+
+# get correlation
+data = data.astype(dtype='float')
+data_corr = data.corr()
+print(data_corr['price'])
