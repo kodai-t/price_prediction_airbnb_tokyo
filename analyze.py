@@ -56,11 +56,14 @@ data = pd.get_dummies(data, columns=['area', 'property_type', 'room_type', 'bed_
 data = data.astype(dtype='float')
 data_corr = data.corr()
 
-# Extract columns which has high correlation with 'price'
+# Extract columns which have high correlation with 'price'
 high_corr_columns = []
 for column, corr in data_corr['price'].items():
     # You can change threshold
-    if abs(corr) > 0.05:
+    if abs(corr) > 0.1:
         high_corr_columns.append(column)
 
-print(high_corr_columns)
+# Extract data which have high correlation
+data = data[high_corr_columns]
+
+print(data)
