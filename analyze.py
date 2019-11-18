@@ -63,6 +63,3 @@ def analyze():
     data = data[high_corr_columns]
 
     return data
-
-
-print(analyze())
