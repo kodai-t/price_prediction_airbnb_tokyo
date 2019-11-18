@@ -1,10 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
-import tensorflow as tf
-
-from tensorflow import feature_column
-from tensorflow.keras import layers
 
 # Read the file
 df = pd.read_csv('data/listings.csv', low_memory=False)
