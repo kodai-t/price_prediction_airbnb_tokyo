@@ -41,5 +41,47 @@ normed_train_data = norm(train_data)
 normed_test_data = norm(test_data)
 
 
-# Make a model based on training set
+# Build the model
+def build_model():
+    model = keras.Sequential([
+        layers.Dense(64, activation='relu', input_shape=[len(train_data.keys())]),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1)
+    ])
+
+    optimizer = tf.keras.optimizers.RMSprop(0.001)
+
+    model.compile(loss='mse',
+                  optimizer=optimizer,
+                  metrics=['mae', 'mse'])
+    return model
+
+
+model = build_model()
+model.summary()
+
+# Check if the model works
+example_batch = normed_train_data[:10]
+example_result = model.predict(example_batch)
+example_result
+
+
+# Every time the epoch finish, output '.'.
+# This shows progress
+class PrintDot(keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs):
+    if epoch % 100 == 0: print('')
+    print('.', end='')
+
+
+# Setting epoch
+EPOCHS = 1000
+
+# Train the model and check the history
+history = model.fit(normed_train_data, train_labels,
+                    epochs=EPOCHS, validation_split=0.2, verbose=0, callbacks=[PrintDot()])
+
+hist = pd.DataFrame(history.history)
+hist['epoch'] = history.epoch
+print(hist.tail())
 
