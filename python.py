@@ -100,7 +100,7 @@ def plot_history(history):
 
     plt.figure()
     plt.xlabel('Epoch')
-    plt.ylabel('Mean Abs Error [MPG]')
+    plt.ylabel('Mean Abs Error [USD]')
     plt.plot(hist['epoch'], hist['mae'], label='Train Error')
     plt.plot(hist['epoch'], hist['val_mae'], label='Val Error')
     plt.ylim([0, 5000])
@@ -108,7 +108,7 @@ def plot_history(history):
 
     plt.figure()
     plt.xlabel('Epoch')
-    plt.ylabel('Mean Square Error [$MPG^2$]')
+    plt.ylabel('Mean Square Error [$USD^2$]')
     plt.plot(hist['epoch'], hist['mse'], label='Train Error')
     plt.plot(hist['epoch'], hist['val_mse'], label='Val Error')
     plt.ylim([0, 100000000])
