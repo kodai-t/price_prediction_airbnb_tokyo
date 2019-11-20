@@ -13,6 +13,10 @@ from tensorflow.keras import layers
 
 from analyze import analyze
 
+import os
+
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
 # Get data which have high correlation
 data = analyze()
 
@@ -77,11 +81,39 @@ class PrintDot(keras.callbacks.Callback):
 # Setting epoch
 EPOCHS = 1000
 
+# patience は改善が見られるかを監視するエポック数を表すパラメーター
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+
+
 # Train the model and check the history
-history = model.fit(normed_train_data, train_labels,
-                    epochs=EPOCHS, validation_split=0.2, verbose=0, callbacks=[PrintDot()])
+history = model.fit(normed_train_data, train_labels, epochs=EPOCHS, validation_split=0.2, verbose=0,
+                    callbacks=[early_stop, PrintDot()])
 
 hist = pd.DataFrame(history.history)
 hist['epoch'] = history.epoch
 print(hist.tail())
 
+
+def plot_history(history):
+    hist = pd.DataFrame(history.history)
+    hist['epoch'] = history.epoch
+
+    plt.figure()
+    plt.xlabel('Epoch')
+    plt.ylabel('Mean Abs Error [MPG]')
+    plt.plot(hist['epoch'], hist['mae'], label='Train Error')
+    plt.plot(hist['epoch'], hist['val_mae'], label='Val Error')
+    plt.ylim([0, 5000])
+    plt.legend()
+
+    plt.figure()
+    plt.xlabel('Epoch')
+    plt.ylabel('Mean Square Error [$MPG^2$]')
+    plt.plot(hist['epoch'], hist['mse'], label='Train Error')
+    plt.plot(hist['epoch'], hist['val_mse'], label='Val Error')
+    plt.ylim([0, 100000000])
+    plt.legend()
+    plt.show()
+
+
+plot_history(history)
