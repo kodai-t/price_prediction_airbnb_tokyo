@@ -43,13 +43,18 @@ def analyze():
     data['is_location_exact'].replace(bool_map, inplace=True)
     data['has_availability'].replace(bool_map, inplace=True)
 
-
     # One-hot encoding
     data = pd.get_dummies(data, columns=['area', 'property_type', 'room_type', 'bed_type'])
 
+    # Change all data type to float
+    data = data.astype(dtype='float')
+
+    # Remove outliers
+    data = data[data['price'] < 50000]
+    data = data[data['cleaning_fee'] < 10000]
+    data = data[data['extra_people'] < 5000]
 
     # get correlation
-    data = data.astype(dtype='float')
     data_corr = data.corr()
 
     # Extract columns which have high correlation with 'price'

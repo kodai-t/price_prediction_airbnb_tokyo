@@ -1,23 +1,35 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import pathlib
+
+import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.model_selection import train_test_split
+import seaborn as sns
 
 import tensorflow as tf
 
-from tensorflow import feature_column
+from tensorflow import keras
 from tensorflow.keras import layers
 
 from analyze import analyze
 
-# Remove outliers
+# Get data which have high correlation
 data = analyze()
-data = data[data['price'] < 50000]
+
+# Separate data into training set and test set
+train_data = data.sample(frac=0.8, random_state=0)
+test_data = data.drop(train_data.index)
+
+train_stats = train_data.describe()
+train_stats.pop('price')
+train_stats = train_stats.transpose()
+print(train_stats)
+
 
 # Normalization
-data = analyze()
 data = ((data - data.min()) / (data.max() - data.min()))
+# print(data)
 
-
-# Make training set and test set
-train_set, test_set = train_test_split(data, test_size=0.25)
 
 # Make a model based on training set
+
