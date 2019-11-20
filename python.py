@@ -22,15 +22,23 @@ test_data = data.drop(train_data.index)
 
 
 # You can see stats information. Used the result to get rid of outliers
-# train_stats = train_data.describe()
-# train_stats.pop('price')
-# train_stats = train_stats.transpose()
-# print(train_stats)
+train_stats = train_data.describe()
+train_stats.pop('price')
+train_stats = train_stats.transpose()
+print(train_stats)
+
+# Split features from labels
+train_labels = train_data.pop('price')
+test_labels = test_data.pop('price')
 
 
 # Normalization
-data = ((data - data.min()) / (data.max() - data.min()))
-# print(data)
+def norm(x):
+    return (x - train_stats['mean']) / train_stats['std']
+
+
+normed_train_data = norm(train_data)
+normed_test_data = norm(test_data)
 
 
 # Make a model based on training set
