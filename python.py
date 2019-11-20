@@ -20,10 +20,12 @@ data = analyze()
 train_data = data.sample(frac=0.8, random_state=0)
 test_data = data.drop(train_data.index)
 
-train_stats = train_data.describe()
-train_stats.pop('price')
-train_stats = train_stats.transpose()
-print(train_stats)
+
+# You can see stats information. Used the result to get rid of outliers
+# train_stats = train_data.describe()
+# train_stats.pop('price')
+# train_stats = train_stats.transpose()
+# print(train_stats)
 
 
 # Normalization
