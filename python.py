@@ -55,9 +55,7 @@ def build_model():
 
     optimizer = tf.keras.optimizers.RMSprop(0.001)
 
-    model.compile(loss='mse',
-                  optimizer=optimizer,
-                  metrics=['mae', 'mse'])
+    model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
     return model
 
 
@@ -74,11 +72,12 @@ example_result
 # This shows progress
 class PrintDot(keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs):
-    if epoch % 100 == 0: print('')
+    if epoch % 100 == 0:
+        print('')
     print('.', end='')
 
 
-# Setting epoch
+# Setting epochs
 EPOCHS = 1000
 
 # patience は改善が見られるかを監視するエポック数を表すパラメーター
@@ -118,6 +117,20 @@ def plot_history(history):
 
 plot_history(history)
 
-
+# Show how well the model generalizes by using the test set
 loss, mae, mse = model.evaluate(normed_test_data, test_labels, verbose=2)
 print("Testing set Mean Abs Error: {:5.2f} JPY".format(mae))
+
+# Make predictions
+test_predictions = model.predict(normed_test_data).flatten()
+
+plt.figure()
+plt.scatter(test_labels, test_predictions)
+plt.xlabel('True Values [JPY]')
+plt.ylabel('Predictions [JPY]')
+plt.axis('equal')
+plt.axis('square')
+plt.xlim([0, plt.xlim()[1]])
+plt.ylim([0, plt.ylim()[1]])
+plt.plot([-100, 100], [-100, 100])
+plt.show()
