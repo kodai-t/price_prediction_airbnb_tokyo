@@ -84,23 +84,23 @@ EPOCHS = 1000
 # patience は改善が見られるかを監視するエポック数を表すパラメーター
 early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
-
 # Train the model and check the history
 history = model.fit(normed_train_data, train_labels, epochs=EPOCHS, validation_split=0.2, verbose=0,
                     callbacks=[early_stop, PrintDot()])
 
-hist = pd.DataFrame(history.history)
-hist['epoch'] = history.epoch
-print(hist.tail())
+# hist = pd.DataFrame(history.history)
+# hist['epoch'] = history.epoch
+# print(hist.tail())
 
 
+# plot function
 def plot_history(history):
     hist = pd.DataFrame(history.history)
     hist['epoch'] = history.epoch
 
     plt.figure()
     plt.xlabel('Epoch')
-    plt.ylabel('Mean Abs Error [USD]')
+    plt.ylabel('Mean Abs Error [JPY]')
     plt.plot(hist['epoch'], hist['mae'], label='Train Error')
     plt.plot(hist['epoch'], hist['val_mae'], label='Val Error')
     plt.ylim([0, 5000])
@@ -108,7 +108,7 @@ def plot_history(history):
 
     plt.figure()
     plt.xlabel('Epoch')
-    plt.ylabel('Mean Square Error [$USD^2$]')
+    plt.ylabel('Mean Square Error [$JPY^2$]')
     plt.plot(hist['epoch'], hist['mse'], label='Train Error')
     plt.plot(hist['epoch'], hist['val_mse'], label='Val Error')
     plt.ylim([0, 100000000])
@@ -117,3 +117,7 @@ def plot_history(history):
 
 
 plot_history(history)
+
+
+loss, mae, mse = model.evaluate(normed_test_data, test_labels, verbose=2)
+print("Testing set Mean Abs Error: {:5.2f} USD".format(mae))
