@@ -50,9 +50,10 @@ def analyze():
     data = data.astype(dtype='float')
 
     # Remove outliers
-    data = data[data['price'] < 50000]
+    data = data[data['price'] < 40000]
     data = data[data['cleaning_fee'] < 10000]
     data = data[data['extra_people'] < 5000]
+    print('data size: ' + str(len(data)))
 
     # get correlation
     data_corr = data.corr()
@@ -62,8 +63,8 @@ def analyze():
     high_corr_columns = []
     for column, corr in data_corr['price'].items():
         # You can change threshold
-        if abs(corr) > 0.1:
-            print(column + ': ' + str(corr))
+        if abs(corr) > 0.01:
+            # print(column + ': ' + str(corr))
             high_corr_columns.append(column)
 
     # Extract data which have high correlation
