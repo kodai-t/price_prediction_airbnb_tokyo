@@ -52,7 +52,7 @@ def build_model():
 
     optimizer = tf.keras.optimizers.RMSprop()
 
-    model.compile(loss='mse', optimizer=optimizer, metrics=['mae', 'mse'])
+    model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
     return model
 
 
