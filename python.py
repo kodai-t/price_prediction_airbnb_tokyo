@@ -46,11 +46,11 @@ normed_test_data = norm(test_data)
 # Build the model
 def build_model():
     model = keras.Sequential([
-        layers.Dense(256, activation='relu', input_shape=[len(train_data.keys())]),
+        layers.Dense(256, activation='elu', input_shape=[len(train_data.keys())]),
         layers.Dense(1)
     ])
 
-    optimizer = tf.keras.optimizers.RMSprop()
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=0.01)
 
     model.compile(loss='mae', optimizer=optimizer, metrics=['mae', 'mse'])
     return model
