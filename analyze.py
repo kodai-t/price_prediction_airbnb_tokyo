@@ -63,8 +63,8 @@ def analyze():
     high_corr_columns = []
     for column, corr in data_corr['price'].items():
         # You can change threshold
-        if abs(corr) > 0.01:
-            # print(column + ': ' + str(corr))
+        if abs(corr) > 0.05:
+            print(column + ': ' + str(corr))
             high_corr_columns.append(column)
 
     # Extract data which have high correlation
